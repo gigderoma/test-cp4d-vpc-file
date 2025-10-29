@@ -38,7 +38,6 @@ RUN cat << 'EOF' > /entrypoint.sh && chmod +x /entrypoint.sh
 + cp -rpu /cc-home-content/_global_ /cc-home/
 cp: cannot create directory '/cc-home/_global_': Permission denied
 EOF
-
 # 4. Set the container to run as the custom user
 USER ${CUSTOM_USER_ID}
 
