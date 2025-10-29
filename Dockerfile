@@ -14,10 +14,13 @@ RUN groupadd -g ${CUSTOM_GROUP_ID} customgroup && \
 RUN mkdir -p /cc-home-content/_global_
 
 # 3. Create the entrypoint script to execute the problematic command
-RUN echo "echo 'Executing cp command that will fail due to Permission Denied:'" > /entrypoint.sh && \
+RUN echo "#!/bin/sh" > /entrypoint.sh && \
+    echo "set -ex" >> /entrypoint.sh && \
+    echo "" >> /entrypoint.sh && \
+    echo "echo 'Executing cp command that will fail due to Permission Denied:'" >> /entrypoint.sh && \
     echo "cp -rpu /cc-home-content/_global_ /cc-home/" >> /entrypoint.sh && \
     echo "if [ \$? -ne 0 ]; then echo 'Command failed as expected.'; fi" >> /entrypoint.sh && \
-    # Keep the container running so the Deployment doesn't immediately CrashLoopBackOff
+    # Keep the container running so the Deployment doesn't immediately exit
     echo "sleep 3600" >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
