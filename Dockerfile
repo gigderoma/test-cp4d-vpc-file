@@ -22,22 +22,22 @@ RUN mkdir -p /cc-home-content/_global_/security/customer-keystores && \
 
 # 3. Create the startup script with the problematic commands
 # This script will fail on 'cp -rpu /cc-home-content/_global_ /cc-home/'
-RUN echo "+ umask 002" > /entrypoint.sh && \
-    echo "+ '[' -d /cc-home ']' # Check if mount exists" >> /entrypoint.sh && \
-    echo "+ '[' -d /cc-home-content ']' # Check if content exists" >> /entrypoint.sh && \
-    echo "echo '======= Setting up the cc-home directory tree ======='" >> /entrypoint.sh && \
-    echo "+ echo '======= Setting up the cc-home directory tree ======='" >> /entrypoint.sh && \
-    echo "+ '[' -f /cc-home/_global_/security/customer-keystores/idp.keystore.jks ']' " >> /entrypoint.sh && \
-    echo "echo '======= Cluster has no keystore setup ======='" >> /entrypoint.sh && \
-    echo "+ echo '======= Cluster has no keystore setup ======='" >> /entrypoint.sh && \
-    echo "+ '[' -f /cc-home/_global_/security/customer-truststores/cacerts ']' " >> /entrypoint.sh && \
-    echo "echo '======= Cluster has no truststore setup ======='" >> /entrypoint.sh && \
-    echo "+ echo '======= Cluster has no truststore setup ======='" >> /entrypoint.sh && \
-    echo "unlink /cc-home-content/.scripts/publishing-startup-scripts" >> /entrypoint.sh && \
-    echo "+ unlink /cc-home-content/.scripts/publishing-startup-scripts" >> /entrypoint.sh && \
-    echo "cp -rpu /cc-home-content/_global_ /cc-home/" >> /entrypoint.sh && \
-    echo 'echo "cp: cannot create directory '\'/cc-home/_global_\'\': Permission denied" # Expected failure' >> /entrypoint.sh && \
-    chmod +x /entrypoint.sh
+RUN cat << 'EOF' > /entrypoint.sh && chmod +x /entrypoint.sh
++ umask 002
++ '[' -d /cc-home ']' # Check if mount exists
++ '[' -d /cc-home-content ']' # Check if content exists
+======= Setting up the cc-home directory tree =======
++ echo '======= Setting up the cc-home directory tree ======='
++ '[' -f /cc-home/_global_/security/customer-keystores/idp.keystore.jks ']'
+======= Cluster has no keystore setup =======
++ echo '======= Cluster has no keystore setup ======='
++ '[' -f /cc-home/_global_/security/customer-truststores/cacerts ']'
+======= Cluster has no truststore setup =======
++ echo '======= Cluster has no truststore setup ======='
++ unlink /cc-home-content/.scripts/publishing-startup-scripts
++ cp -rpu /cc-home-content/_global_ /cc-home/
+cp: cannot create directory '/cc-home/_global_': Permission denied
+EOF
 
 # 4. Set the container to run as the custom user
 USER ${CUSTOM_USER_ID}
